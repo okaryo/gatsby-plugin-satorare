@@ -1,0 +1,33 @@
+{
+  "name": "gatsby-plugin-satorare",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okaryo/gatsby-plugin-satorare.git"
+  },
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "satori",
+    "ogp"
+  ],
+  "author": "okaryo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/okaryo/gatsby-plugin-satorare/issues"
+  },
+  "homepage": "https://github.com/okaryo/gatsby-plugin-satorare#readme",
+  "devDependencies": {
+    "satori": "^0.1.2",
+    "typescript": "^4.9.5"
+  },
+  "peerDependencies": {
+    "gatsby": "^5.0.0",
+    "react": "^18.0.0 || ^0.0.0"
+  }
+}
