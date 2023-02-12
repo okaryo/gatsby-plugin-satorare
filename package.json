@@ -1,6 +1,6 @@
 {
   "name": "@okaryo/gatsby-plugin-satorare",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Generate OG image in JSX syntax!",
   "main": "index.js",
   "type": "module",
@@ -18,7 +18,14 @@
     "gatsby",
     "gatsby-plugin",
     "satori",
-    "ogp"
+    "ogp",
+    "open graph image",
+    "open graph",
+    "og image",
+    "og:image",
+    "social",
+    "card",
+    "image"
   ],
   "author": "okaryo",
   "license": "MIT",

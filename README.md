@@ -24,15 +24,18 @@ plugins: [
 ```
 
 #### 2. Create OG file with JSX/TSX
+Default export a function that returns an object with `image` and `options` as follows.
 
 ```tsx
-import { OgImage } 'gatsby-plugin-satorare'
+type MyFrontmatter = {
+  title: string
+}
 
 export default function(frontmatter) {
   const title = frontmatter.title
 
-  return new OgImage(
-    (
+  return {
+    image: (
       <div
         style={{
           display: 'flex',
@@ -47,11 +50,11 @@ export default function(frontmatter) {
         <p>{title}</p>
       </div>
     ),
-    {
+    options: {
       width: 600,
       height: 400
     }
-  )
+  }
 }
 ```
 
