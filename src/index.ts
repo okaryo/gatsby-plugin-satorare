@@ -1,1 +1,1 @@
-export { OgImage } from './og-image'
+// noop
