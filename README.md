@@ -1,5 +1,3 @@
- 🚧 There is still a bug in this plugin. 🚧
-
 ## gatsby-plugin-satorare
 This plugin uses [vercel/satori](https://github.com/vercel/satori) internally and supports OG image generation in JSX syntax.
 
