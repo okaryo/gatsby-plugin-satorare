@@ -62,7 +62,7 @@ export const onPostBootstrap: GatsbyNode['onPostBootstrap'] = async (
   { actions, cache, getNodesByType, createNodeId }, options: Options
 ) => {
   const nodes = getNodesByType('MarkdownRemark')
-  nodes.forEach(async (node) => {
+  for (const node of nodes) {
     const frontmatter = node.frontmatter as {[key: string]: unknown}
     const png = await generateOGPImage(options, frontmatter)
     const fileNode = await createFileNodeFromBuffer({
@@ -78,5 +78,5 @@ export const onPostBootstrap: GatsbyNode['onPostBootstrap'] = async (
       node,
       value: fileNode.id,
     })
-  })
+  }
 }
