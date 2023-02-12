@@ -148,10 +148,12 @@ query MyQuery {
 
 #### 4. Set meta tag
 ```jsx
+const yourSite = 'https://example.com'
+
 return (
   <>
     {/* other meta tags */}
-    <meta property='og:image' content={data.markdownRemark.ogImage.publicURL} />
+    <meta property='og:image' content={`${yourSite}${data.markdownRemark.ogImage.publicURL}`} />
     {/* other meta tags */}
   <>
 )
