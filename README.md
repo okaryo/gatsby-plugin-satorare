@@ -57,7 +57,7 @@ export default function(frontmatter: MyFrontmatter) {
       <div
         style={{
           display: 'flex',
-          padding: 32,
+          padding: 48,
           height: '100%',
           backgroundColor: '#2e3440',
         }}
@@ -71,7 +71,7 @@ export default function(frontmatter: MyFrontmatter) {
             flexDirection: 'column',
             backgroundColor: 'white',
             color: '#000000d1',
-            padding: 32,
+            padding: 48,
             borderRadius: 12,
           }}
         >
@@ -81,17 +81,17 @@ export default function(frontmatter: MyFrontmatter) {
               flexDirection: 'column',
             }}
           >
-            <div style={{ fontSize: 32, maxWidth: 470, fontWeight: 600 }}>{title}</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', marginTop: 8, gap: 8 }}>
+            <div style={{ fontSize: 64, maxWidth: 1000, fontWeight: 600 }}>{title}</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', marginTop: 16, gap: 16 }}>
               {tags.map((tag, i) => (
                 <div
                   key={i}
                   style={{
-                    fontSize: 16,
+                    fontSize: 32,
                     fontWeight: 400,
-                    backgroundColor: '#e5e7eb',
-                    padding: '4px 12px',
-                    borderRadius: 100,
+                    backgroundColor: 'rgb(229,231,235)',
+                    padding: '8px 24px',
+                    borderRadius: 200,
                   }}
                 >
                   {tag}
@@ -99,13 +99,13 @@ export default function(frontmatter: MyFrontmatter) {
               ))}
             </div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
-            <div style={{ fontSize: 24, fontWeight: 400, display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
+            <div style={{ fontSize: 48, fontWeight: 400, display: 'flex', alignItems: 'center' }}>
               <img
                 src="https://avatars.githubusercontent.com/u/44517313?v=4"
-                width={36}
-                height={36}
-                style={{ borderRadius: '50%', marginRight: 12 }}
+                width={72}
+                height={72}
+                style={{ borderRadius: '50%', marginRight: 16 }}
               />
               okaryo
             </div>
@@ -114,8 +114,8 @@ export default function(frontmatter: MyFrontmatter) {
       </div>
     ),
     options: {
-      width: 600,
-      height: 400
+      width: 1200,
+      height: 630
     }
   }
 }
@@ -160,4 +160,4 @@ return (
 ```
 
 #### 5. Finished!
-![346297c51ed5accb21d742efde7fac41](https://user-images.githubusercontent.com/44517313/218300623-21a0aff5-2b83-473c-9279-92f1d996484c.png)
+![og:image](https://user-images.githubusercontent.com/44517313/218302838-61784400-4b6f-422b-8512-45b8bb9d433d.png)
