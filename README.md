@@ -23,7 +23,8 @@ plugins: [
   {
     resolve: `gatsby-plugin-satorare`,
     options: {
-      source: `${__dirname}/src/components/OgImage.tsx`
+      path: `${__dirname}/src/components/OgImage.tsx`,
+      font: `${__dirname}/src/assets/favorite_font.otf`,
     }
   },
   // ... other plugins
@@ -161,3 +162,14 @@ return (
 
 #### 5. Finished!
 ![og:image](https://user-images.githubusercontent.com/44517313/218302838-61784400-4b6f-422b-8512-45b8bb9d433d.png)
+
+### Options
+#### path
+**Requried**
+
+Path to JSX/TSX file fot OG image.
+
+#### font
+**Optional**
+
+Path to font used in OG image. Default font is [`Noto Sans Japanese(Regular400)`](https://fonts.google.com/noto/specimen/Noto+Sans+JP).
