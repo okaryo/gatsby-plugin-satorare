@@ -14,10 +14,12 @@ const __dirname = path.dirname(__filename)
 type Options = {
   path: string
   font: string
+  emojis: {[key: string]: string}
 }
 
 const defaultOptions = {
-  font: `${__dirname}/assets/NotoSansJP-Regular.otf`
+  font: `${__dirname}/assets/NotoSansJP-Regular.otf`,
+  emojis: {},
 }
 
 const generateOGPImage = async (options: Options, frontmatter: {[key: string]: unknown}): Promise<Buffer> => {
@@ -43,10 +45,12 @@ const generateOGPImage = async (options: Options, frontmatter: {[key: string]: u
       ...ogImage.options,
       fonts: [
         {
-          name: 'NotoSansJP-Regular',
+          name: `OG image font`,
           data: font,
         },
       ],
+      // TODO: If the original satori solves emoji problems, we will check the operation and possibly modify codes.
+      graphemeImages: options.emojis,
     }
   )
   return sharp(Buffer.from(svg)).png().toBuffer()
