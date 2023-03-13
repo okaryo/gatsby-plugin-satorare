@@ -1,7 +1,7 @@
 {
   "name": "gatsby-plugin-satorare",
-  "version": "0.0.9",
-  "description": "Generate OG image in JSX syntax!",
+  "version": "0.1.0",
+  "description": "Generate dynamic OG image in JSX syntax!",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -41,7 +41,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "satori": "^0.2.1",
+    "satori": "^0.4.2",
     "sharp": "^0.31.3",
     "vm2": "^3.9.14"
   },

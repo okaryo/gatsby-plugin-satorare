@@ -1,13 +1,6 @@
 ## gatsby-plugin-satorare
 This plugin uses [vercel/satori](https://github.com/vercel/satori) internally and supports OG image generation in JSX syntax.
 
-### 🚧 Warning 🚧
-This plugin is still in beta and unstable.
-
-- It only supports MarkdownRemark nodes.
-- Font cannot be selected. The default is [Noto Sans Japanese](https://fonts.google.com/noto/specimen/Noto+Sans+JP?selected=Material+Icons).
-- Usage may change drastically.
-
 ### Installation
 
 ```sh
@@ -19,16 +12,30 @@ npm i --save gatsby-plugin-satorare
 ```js
 // In your gatsby-config.js
 plugins: [
-  // ... other plugins
   {
     resolve: `gatsby-plugin-satorare`,
     options: {
-      source: `${__dirname}/src/components/OgImage.tsx`
+      path: `${__dirname}/src/components/OgImage.tsx`,
+      font: `${__dirname}/src/assets/favorite_font.otf`,
+      width: 1200,
+      height: 630,
+      graphemeImages: {
+        '🤯': 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f92f.svg',
+      },
+      target_nodes: ['Site', 'MarkdownRemark']
     }
   },
-  // ... other plugins
 ]
 ```
+
+|option|type|description|default|
+|:-----|:---|:----------|:------|
+|`path`|string|Path to JSX/TSX file fot OG image. This option is **required**.||
+|`font`|string|Path to font used in OG image.|[`Noto Sans Japanese(Regular400)`](https://fonts.google.com/noto/specimen/Noto+Sans+JP)|
+|`width`|number|Width of og image. Default value|1200|
+|`height`|number|Height of og image.|630|
+|`graphemeImages`|{[key: string]: string}|Image sources for specific graphemes. See details [here](https://github.com/vercel/satori#emojis).|{}|
+|`target_nodes`|string[]|Node type for the source of OG image.|['Site', 'MarkdownRemark']|
 
 #### 2. Create OG file with JSX/TSX
 The following frontmatter is assumed.
@@ -40,20 +47,20 @@ tags: ["Gatsby", "og:image"]
 ---
 ```
 
-Default export a function that returns an object with `image` and `options` as follows. You can get frontmatter data from the argument.
+Export a default function that returns an ReactNodeElement as follows. You can get node of the type specified in `target_nodes` in config options from argument.
 
 ```tsx
 // ./src/components/OgImage.tsx
-type MyFrontmatter = {
+import { Node } from 'gatsby'
+
+type Frontmatter = {
   title: string
   tags: string[]
 }
 
-export default function(frontmatter: MyFrontmatter) {
-  const { title, tags } = frontmatter
-
-  return {
-    image: (
+export default function(node: Node) {
+  if (node.internal.type === 'MarkdownRemark') {
+    return (
       <div
         style={{
           display: 'flex',
@@ -112,11 +119,11 @@ export default function(frontmatter: MyFrontmatter) {
           </div>
         </div>
       </div>
-    ),
-    options: {
-      width: 1200,
-      height: 630
-    }
+    )
+  } else {
+    return (
+      <div>Default OG image</div>
+    )
   }
 }
 ```
@@ -125,9 +132,14 @@ export default function(frontmatter: MyFrontmatter) {
 ```js
 // query
 `
-query MyQuery {
-  markdownRemark(id: {eq: "45a4a997-f230-56cc-a94a-004db0b667d7"}) {
-    ogImage {
+query MyQuery($id: String!) {
+  markdownRemarkOgImage(parent: {id: {eq: $id}}) {
+    attributes {
+      publicURL
+    }
+  }
+  siteOgImage {
+    attributes {
       publicURL
     }
   }
@@ -137,9 +149,14 @@ query MyQuery {
 // result
 {
   "data": {
-    "markdownRemark": {
-      "ogImage": {
+    "markdownRemarkOgImage": {
+      "attributes": {
         "publicURL": "/static/8d5a6b2a951985acb20f041bf8f52e61/8d5a6b2a951985acb20f041bf8f52e61.png"
+      }
+    },
+    "siteOgImage": {
+      "attributes": {
+        "publicURL": "/static/1d3db0d32c1e9ff61a30f15b2b9b6a2d/1d3db0d32c1e9ff61a30f15b2b9b6a2d.png"
       }
     }
   }
@@ -153,7 +170,7 @@ const yourSite = 'https://example.com'
 return (
   <>
     {/* other meta tags */}
-    <meta property='og:image' content={`${yourSite}${data.markdownRemark.ogImage.publicURL}`} />
+    <meta property='og:image' content={`${yourSite}${data.markdownRemarkOgImage.attributes.publicURL}`} />
     {/* other meta tags */}
   <>
 )
