@@ -16,9 +16,14 @@ plugins: [
     resolve: `gatsby-plugin-satorare`,
     options: {
       path: `${__dirname}/src/components/OgImage.tsx`,
-      font: `${__dirname}/src/assets/favorite_font.otf`,
       width: 1200,
       height: 630,
+      fonts: [
+        {
+          name: `FavoriteFont`,
+          path: `${__dirname}/src/assets/favorite_font.otf`,
+        },
+      ],
       graphemeImages: {
         '🤯': 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/1f92f.svg',
       },
@@ -31,9 +36,9 @@ plugins: [
 |option|type|description|default|
 |:-----|:---|:----------|:------|
 |`path`|string|Path to JSX/TSX file fot OG image. This option is **required**.||
-|`font`|string|Path to font used in OG image.|[`Noto Sans Japanese(Regular400)`](https://fonts.google.com/noto/specimen/Noto+Sans+JP)|
 |`width`|number|Width of og image. Default value|1200|
 |`height`|number|Height of og image.|630|
+|`fonts`|{name: string, path: string, weight?: number, style?: string, lang?: string}[]|Path to font used in OG image.|[`Noto Sans Japanese(Regular400)`](https://fonts.google.com/noto/specimen/Noto+Sans+JP)|
 |`graphemeImages`|{[key: string]: string}|Image sources for specific graphemes. See details [here](https://github.com/vercel/satori#emojis).|{}|
 |`target_nodes`|string[]|Node type for the source of OG image.|['Site', 'MarkdownRemark']|
 
@@ -47,7 +52,9 @@ tags: ["Gatsby", "og:image"]
 ---
 ```
 
-Export a default function that returns an ReactNodeElement as follows. You can get node of the type specified in `target_nodes` in config options from argument.
+Export a default function that returns an ReactElement as follows. You can get node of the type specified in `target_nodes` in config options from argument.
+
+[vercel's Playground](https://og-playground.vercel.app) is useful to create OG images while previewing the generated image.
 
 ```tsx
 // ./src/components/OgImage.tsx
@@ -60,6 +67,10 @@ type Frontmatter = {
 
 export default function(node: Node) {
   if (node.internal.type === 'MarkdownRemark') {
+    const frontmatter = node.frontmatter as Frontmatter
+    const title = frontmatter.title
+    const tags = frontmatter.tags
+
     return (
       <div
         style={{

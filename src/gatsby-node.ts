@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import satori from 'satori'
+import satori, { Font } from 'satori'
 import sharp from 'sharp'
 import typescript from 'typescript'
 import { createFileNodeFromBuffer } from 'gatsby-source-filesystem'
@@ -8,31 +8,63 @@ import { Node, GatsbyNode } from 'gatsby'
 import { fileURLToPath } from 'url'
 import { NodeVM, VMScript } from 'vm2'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-type Options = {
+type Option = {
   path: string
-  font: string
   width: number
   height: number
+  fonts: FontOption[]
   graphemeImages: {[key: string]: string}
   target_nodes: string[]
 }
+type FontOption = {
+  name: string
+  path: string
+  weight?: FontWeight
+  style?: FontStyle
+  lang?: string
+}
+type FontStyle = 'normal' | 'italic'
+type FontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
+type CreateOGImageByNode = (node: Node) => React.ReactElement
 
-const defaultOptions: Options = {
-  path: ``,
-  font: `${__dirname}/assets/NotoSansJP-Regular.otf`,
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const defaultOption: Option = {
+  path: '',
+  fonts: [
+    {
+      name: 'NotoSansJP',
+      path: `${__dirname}/assets/NotoSansJP-Regular.otf`,
+      weight: 400,
+      style: 'normal',
+    }
+  ],
   width: 1200,
   height: 630,
   graphemeImages: {},
   target_nodes: ['Site', 'MarkdownRemark']
 }
 
-const generateOGPImage = async (node: Node, options: Options): Promise<Buffer> => {
-  const font = fs.readFileSync(options.font)
-  const jsxCode = fs.readFileSync(options.path, 'utf8')
+const generateOGImage = async (
+  node: Node, fonts: Font[], createOGImagebyNode: CreateOGImageByNode, option: Option
+): Promise<Buffer> => {
+  const ogImageElement = createOGImagebyNode(node)
 
+  const svg = await satori(
+    ogImageElement,
+    {
+      width: option.width,
+      height: option.height,
+      fonts: fonts,
+      // TODO: If the original satori solves emoji problems, we will check the operation and possibly modify codes.
+      graphemeImages: option.graphemeImages,
+    }
+  )
+  return sharp(Buffer.from(svg)).png().toBuffer()
+}
+
+const createOGImageElement = (path: string) => {
+  const jsxCode = fs.readFileSync(path, 'utf8')
   const transpileModule = typescript.transpileModule(jsxCode, {
     compilerOptions: {
       jsx: typescript.JsxEmit.ReactJSX,
@@ -44,33 +76,17 @@ const generateOGPImage = async (node: Node, options: Options): Promise<Buffer> =
     }
   })
   const jsCode = new VMScript(transpileModule.outputText)
-  const ogImageElement = vm.run(jsCode).default(node)
 
-  const svg = await satori(
-    ogImageElement,
-    {
-      width: options.width,
-      height: options.height,
-      fonts: [
-        {
-          name: `OG image font`,
-          data: font,
-        },
-      ],
-      // TODO: If the original satori solves emoji problems, we will check the operation and possibly modify codes.
-      graphemeImages: options.graphemeImages,
-    }
-  )
-  return sharp(Buffer.from(svg)).png().toBuffer()
+  return vm.run(jsCode).default
 }
 
-export const createSchemaCustomization = ({ actions }, userOptions) => {
-  const options: Options = {
-    ...defaultOptions,
-    ...userOptions,
+export const createSchemaCustomization = ({ actions }, userOption) => {
+  const option: Option = {
+    ...defaultOption,
+    ...userOption,
   }
 
-  for (const targetNode of options.target_nodes) {
+  for (const targetNode of option.target_nodes) {
     actions.createTypes(`
       type ${targetNode}OgImage implements Node {
         attributes: File
@@ -80,19 +96,29 @@ export const createSchemaCustomization = ({ actions }, userOptions) => {
 }
 
 export const onPostBootstrap: GatsbyNode['onPostBootstrap'] = async (
-  { actions, cache, reporter, getNodesByType, createNodeId }, userOptions
+  { actions, cache, reporter, getNodesByType, createNodeId }, userOption
 ) => {
-  if (userOptions.path === undefined) reporter.panic(`[gatsby-plugin-satorare] \`path\` config is required.`)
+  if (userOption.path === undefined) reporter.panic('[gatsby-plugin-satorare] `path` config is required.')
 
-  const options: Options = {
-    ...defaultOptions,
-    ...userOptions,
+  const option: Option = {
+    ...defaultOption,
+    ...userOption,
   }
+  const fonts: Font[] = option.fonts.map((font) => {
+    return {
+      name: font.name,
+      data: fs.readFileSync(font.path),
+      weight: font.weight,
+      style: font.style,
+      lang: font.lang,
+    }
+  })
+  const ogImageElementFunc = createOGImageElement(option.path)
 
-  for (const targetNode of options.target_nodes) {
+  for (const targetNode of option.target_nodes) {
     const nodes = getNodesByType(targetNode)
     for (const node of nodes) {
-      const png = await generateOGPImage(node, options)
+      const png = await generateOGImage(node, fonts, ogImageElementFunc, option)
       const fileNode = await createFileNodeFromBuffer({
         buffer: png,
         cache,
