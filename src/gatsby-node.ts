@@ -8,9 +8,6 @@ import { Node, GatsbyNode } from 'gatsby'
 import { fileURLToPath } from 'url'
 import { NodeVM, VMScript } from 'vm2'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
 type Option = {
   path: string
   width: number
@@ -30,6 +27,8 @@ type FontStyle = 'normal' | 'italic'
 type FontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
 type CreateOGImageByNode = (node: Node) => React.ReactElement
 
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 const defaultOption: Option = {
   path: '',
   fonts: [
@@ -99,7 +98,7 @@ export const createSchemaCustomization = ({ actions }, userOption) => {
 export const onPostBootstrap: GatsbyNode['onPostBootstrap'] = async (
   { actions, cache, reporter, getNodesByType, createNodeId }, userOption
 ) => {
-  if (userOption.path === undefined) reporter.panic(`[gatsby-plugin-satorare] \`path\` config is required.`)
+  if (userOption.path === undefined) reporter.panic('[gatsby-plugin-satorare] `path` config is required.')
 
   const option: Option = {
     ...defaultOption,
