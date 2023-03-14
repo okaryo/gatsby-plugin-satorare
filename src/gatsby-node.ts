@@ -13,16 +13,32 @@ const __dirname = path.dirname(__filename)
 
 type Options = {
   path: string
-  font: string
   width: number
   height: number
+  fonts: Font[]
   graphemeImages: {[key: string]: string}
   target_nodes: string[]
 }
+type Font = {
+  name: string
+  path: string
+  weight?: Weight
+  style?: Style
+  lang?: string
+}
+type Style = 'normal' | 'italic'
+type Weight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
 
 const defaultOptions: Options = {
-  path: ``,
-  font: `${__dirname}/assets/NotoSansJP-Regular.otf`,
+  path: '',
+  fonts: [
+    {
+      name: 'NotoSansJP',
+      path: `${__dirname}/assets/NotoSansJP-Regular.otf`,
+      weight: 400,
+      style: 'normal',
+    }
+  ],
   width: 1200,
   height: 630,
   graphemeImages: {},
@@ -30,7 +46,15 @@ const defaultOptions: Options = {
 }
 
 const generateOGPImage = async (node: Node, options: Options): Promise<Buffer> => {
-  const font = fs.readFileSync(options.font)
+  const fonts = options.fonts.map((font) => {
+    return {
+      name: font.name,
+      data: fs.readFileSync(font.path),
+      weight: font.weight,
+      style: font.style,
+      lang: font.lang,
+    }
+  })
   const jsxCode = fs.readFileSync(options.path, 'utf8')
 
   const transpileModule = typescript.transpileModule(jsxCode, {
@@ -51,12 +75,7 @@ const generateOGPImage = async (node: Node, options: Options): Promise<Buffer> =
     {
       width: options.width,
       height: options.height,
-      fonts: [
-        {
-          name: `OG image font`,
-          data: font,
-        },
-      ],
+      fonts: fonts,
       // TODO: If the original satori solves emoji problems, we will check the operation and possibly modify codes.
       graphemeImages: options.graphemeImages,
     }
