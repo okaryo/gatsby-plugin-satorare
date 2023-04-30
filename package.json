@@ -41,7 +41,7 @@
     "typescript": "5.0.4"
   },
   "dependencies": {
-    "satori": "^0.7.2",
+    "satori": "^0.7.3",
     "sharp": "^0.32.0",
     "vm2": "^3.9.17"
   },
