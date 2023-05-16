@@ -43,7 +43,7 @@
   "dependencies": {
     "satori": "^0.8.1",
     "sharp": "^0.32.0",
-    "vm2": "^3.9.17"
+    "vm2": "^3.9.19"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^0.0.0",
