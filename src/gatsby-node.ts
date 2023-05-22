@@ -4,7 +4,7 @@ import satori, { Font } from 'satori'
 import sharp from 'sharp'
 import typescript from 'typescript'
 import { createFileNodeFromBuffer } from 'gatsby-source-filesystem'
-import { Node, GatsbyNode } from 'gatsby'
+import { Node, GatsbyNode, GatsbyCache } from 'gatsby'
 import { fileURLToPath } from 'url'
 import { NodeVM, VMScript } from 'vm2'
 
@@ -25,7 +25,6 @@ type FontOption = {
 }
 type FontStyle = 'normal' | 'italic'
 type FontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
-type CreateOGImageByNode = (node: Node) => React.ReactElement
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -45,10 +44,12 @@ const defaultOption: Option = {
   target_nodes: ['Site', 'MarkdownRemark']
 }
 
+const ogImageCacheKey = (node: Node) => `gatsby-plugin-satorare-ogimage-${node.internal.type}-${node.internal.contentDigest}`
+
 const generateOGImage = async (
-  node: Node, fonts: Font[], createOGImagebyNode: CreateOGImageByNode, option: Option
+  node: Node, fonts: Font[], option: Option
 ): Promise<Buffer> => {
-  const ogImageElement = createOGImagebyNode(node)
+  const ogImageElement = createImageReactElement(node, option.path)
 
   const svg = await satori(
     ogImageElement,
@@ -56,14 +57,13 @@ const generateOGImage = async (
       width: option.width,
       height: option.height,
       fonts: fonts,
-      // TODO: If the original satori solves emoji problems, we will check the operation and possibly modify codes.
       graphemeImages: option.graphemeImages,
     }
   )
   return sharp(Buffer.from(svg)).png().toBuffer()
 }
 
-const createOGImageElement = (path: string) => {
+const createImageReactElement = (node: Node, path: string): React.ReactNode => {
   const jsxCode = fs.readFileSync(path, 'utf8')
   const transpileModule = typescript.transpileModule(jsxCode, {
     compilerOptions: {
@@ -77,7 +77,20 @@ const createOGImageElement = (path: string) => {
   })
   const jsCode = new VMScript(transpileModule.outputText)
 
-  return vm.run(jsCode).default
+  const createFunc: (node: Node) => React.ReactNode = vm.run(jsCode).default
+  return createFunc(node)
+}
+
+const getOgImage = async (node: Node, fonts: Font[], option: Option, cache: GatsbyCache): Promise<Buffer> => {
+  const imageCache = await cache.get(ogImageCacheKey(node))
+  if (imageCache) {
+    return Buffer.from(imageCache.data)
+  }
+
+  const image = await generateOGImage(node, fonts, option)
+  await cache.set(ogImageCacheKey(node), image)
+
+  return image
 }
 
 export const createSchemaCustomization = ({ actions }, userOption) => {
@@ -96,9 +109,14 @@ export const createSchemaCustomization = ({ actions }, userOption) => {
 }
 
 export const onPostBootstrap: GatsbyNode['onPostBootstrap'] = async (
-  { actions, cache, reporter, getNodesByType, createNodeId }, userOption
+  { actions, cache, reporter, parentSpan, getNodesByType, createNodeId }, userOption
 ) => {
   if (userOption.path === undefined) reporter.panic('[gatsby-plugin-satorare] `path` config is required.')
+
+  const activity = reporter.activityTimer('generate og images', {
+    parentSpan,
+  })
+  activity.start()
 
   const option: Option = {
     ...defaultOption,
@@ -113,14 +131,13 @@ export const onPostBootstrap: GatsbyNode['onPostBootstrap'] = async (
       lang: font.lang,
     }
   })
-  const ogImageElementFunc = createOGImageElement(option.path)
 
   for (const targetNode of option.target_nodes) {
     const nodes = getNodesByType(targetNode)
     for (const node of nodes) {
-      const png = await generateOGImage(node, fonts, ogImageElementFunc, option)
+      const image = await getOgImage(node, fonts, option, cache)
       const fileNode = await createFileNodeFromBuffer({
-        buffer: png,
+        buffer: image,
         cache,
         createNodeId,
         ...actions,
@@ -140,4 +157,5 @@ export const onPostBootstrap: GatsbyNode['onPostBootstrap'] = async (
       })
     }
   }
+  activity.end()
 }
