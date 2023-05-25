@@ -46,13 +46,11 @@ const defaultOption: Option = {
 
 const ogImageCacheKey = (node: Node) => `gatsby-plugin-satorare-ogimage-${node.internal.type}-${node.internal.contentDigest}`
 
-const generateOGImage = async (
-  node: Node, fonts: Font[], option: Option
-): Promise<Buffer> => {
-  const ogImageElement = createImageReactElement(node, option.path)
+const generateOGImage = async (node: Node, fonts: Font[], option: Option): Promise<Buffer> => {
+  const ogImageReactElement = createOgImageReactElement(node, option.path)
 
   const svg = await satori(
-    ogImageElement,
+    ogImageReactElement,
     {
       width: option.width,
       height: option.height,
@@ -63,7 +61,7 @@ const generateOGImage = async (
   return sharp(Buffer.from(svg)).png().toBuffer()
 }
 
-const createImageReactElement = (node: Node, path: string): React.ReactNode => {
+const createOgImageReactElement = (node: Node, path: string): React.ReactNode => {
   const jsxCode = fs.readFileSync(path, 'utf8')
   const transpileModule = typescript.transpileModule(jsxCode, {
     compilerOptions: {
@@ -113,9 +111,7 @@ export const onPostBootstrap: GatsbyNode['onPostBootstrap'] = async (
 ) => {
   if (userOption.path === undefined) reporter.panic('[gatsby-plugin-satorare] `path` config is required.')
 
-  const activity = reporter.activityTimer('generate og images', {
-    parentSpan,
-  })
+  const activity = reporter.activityTimer('generate og images', { parentSpan })
   activity.start()
 
   const option: Option = {
