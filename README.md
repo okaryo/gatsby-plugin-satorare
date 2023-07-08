@@ -1,5 +1,13 @@
-## gatsby-plugin-satorare
-Gatsby plugin that can dynamically generate OG images using JSX syntax for site and markdowns. This plugin uses [vercel/satori](https://github.com/vercel/satori) internally.
+<h2 align="center">
+  gatsby-plugin-satorare
+</h2>
+
+<p align="center">
+   Gatsby plugin that can dynamically generate OG images using JSX syntax for site and markdowns. This plugin uses <a href="https://github.com/vercel/satori">vercel/satori</a> internally.
+</p>
+
+
+![banner](https://github.com/okaryo/gatsby-plugin-satorare/assets/44517313/b55582b3-e648-4cad-924b-925871161b81)
 
 ### Installation
 
