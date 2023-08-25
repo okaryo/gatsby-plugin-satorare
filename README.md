@@ -7,7 +7,7 @@
 </p>
 
 
-![banner](https://github.com/okaryo/gatsby-plugin-satorare/assets/44517313/b55582b3-e648-4cad-924b-925871161b81)
+![banner](https://github.com/okaryo/gatsby-plugin-satorare/assets/44517313/970ec478-0263-4882-b8af-0aa8125ed147)
 
 ### Installation
 
