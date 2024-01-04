@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc && mv ./dist/* . && rm -rf ./dist",
+    "test": "vitest run",
     "check": "biome check ./src",
     "check:fix": "biome check --apply-unsafe ./src",
     "check:ci": "biome ci ./src",
@@ -36,7 +37,8 @@
   "homepage": "https://github.com/okaryo/gatsby-plugin-satorare#readme",
   "devDependencies": {
     "@biomejs/biome": "^1.4.1",
-    "typescript": "5.3.3"
+    "typescript": "5.3.3",
+    "vitest": "^1.1.1"
   },
   "dependencies": {
     "satori": "^0.10.11",
