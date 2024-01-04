@@ -24,3 +24,5 @@ jobs:
         run: npm install
       - name: Run Biome
         run: npm run check:ci
+      - name: Run test
+        run: npm run test
