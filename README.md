@@ -2,6 +2,13 @@
   gatsby-plugin-satorare
 </h2>
 
+<div align="center">
+
+[![CI](https://github.com/okaryo/gatsby-plugin-satorare/actions/workflows/ci.yml/badge.svg)](https://github.com/okaryo/gatsby-plugin-satorare/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/gatsby-plugin-satorare)](https://www.npmjs.com/package/gatsby-plugin-satorare)
+
+</div>
+
 <p align="center">
    Gatsby plugin that can dynamically generate OG images using JSX syntax for site and markdowns. This plugin uses <a href="https://github.com/vercel/satori">vercel/satori</a> internally.
 </p>
