@@ -6,8 +6,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc && mv ./dist/* . && rm -rf ./dist",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-    "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx .",
+    "check": "biome check ./src",
+    "check:fix": "biome check --apply-unsafe ./src",
+    "check:ci": "biome ci ./src",
     "prepublishOnly": "npm run build"
   },
   "repository": {
@@ -34,10 +35,7 @@
   },
   "homepage": "https://github.com/okaryo/gatsby-plugin-satorare#readme",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.51.0",
-    "@typescript-eslint/parser": "^5.51.0",
-    "eslint": "^8.34.0",
-    "prettier": "2.8.4",
+    "@biomejs/biome": "^1.4.1",
     "typescript": "5.0.4"
   },
   "dependencies": {
@@ -46,8 +44,8 @@
     "vm2": "^3.9.19"
   },
   "peerDependencies": {
-    "react": "^18.0.0 || ^0.0.0",
     "gatsby": "^5.0.0",
-    "gatsby-source-filesystem": "^5.0.0"
+    "gatsby-source-filesystem": "^5.0.0",
+    "react": "^18.0.0 || ^0.0.0"
   }
 }
