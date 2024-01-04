@@ -1,0 +1,20 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": ["config:base"],
+	"timezone": "Asia/Tokyo",
+	"automerge": false,
+	"rangeStrategy": "bump",
+	"dependencyDashboard": false,
+	"branchConcurrentLimit": 0,
+	"prHourlyLimit": 0,
+	"packageRules": [
+		{
+			"matchDepTypes": ["devDependencies"],
+			"groupName": "devDependencies"
+		},
+		{
+			"matchDepTypes": ["dependencies"],
+			"groupName": "dependencies"
+		}
+	]
+}
