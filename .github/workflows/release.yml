@@ -18,16 +18,12 @@ jobs:
           cache: npm
       - name: Install npm packages
         run: npm ci
-      - name: install can-npm-publish and dependencies
-        run: npm ci
       - name: build
         run: npm run build
-      - name: release
-        run: npm publish
+      - name: Publish to npm 
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_ACCESS_TOKEN }}
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Generate release note
         uses: softprops/action-gh-release@v1
         with:
