@@ -1,4 +1,5 @@
 import fs from "fs";
+import os from "os";
 import path from "path";
 import { fileURLToPath } from "url";
 import { GatsbyCache, GatsbyNode, Node } from "gatsby";
@@ -6,7 +7,6 @@ import { createFileNodeFromBuffer } from "gatsby-source-filesystem";
 import satori, { Font } from "satori";
 import sharp from "sharp";
 import typescript from "typescript";
-import { NodeVM, VMScript } from "vm2";
 
 type Option = {
 	path: string;
@@ -52,7 +52,10 @@ const generateOGImage = async (
 	fonts: Font[],
 	option: Option,
 ): Promise<Buffer> => {
-	const ogImageReactElement = createOgImageReactElement(node, option.path);
+	const ogImageReactElement = await createOgImageReactElement(
+		node,
+		option.path,
+	);
 
 	const svg = await satori(ogImageReactElement, {
 		width: option.width,
@@ -63,25 +66,27 @@ const generateOGImage = async (
 	return sharp(Buffer.from(svg)).png().toBuffer();
 };
 
-const createOgImageReactElement = (
+const createOgImageReactElement = async (
 	node: Node,
-	path: string,
-): React.ReactNode => {
-	const jsxCode = fs.readFileSync(path, "utf8");
-	const transpileModule = typescript.transpileModule(jsxCode, {
+	filepath: string,
+): Promise<React.ReactNode> => {
+	const jsxCode = fs.readFileSync(filepath, "utf8");
+	const transpiled = typescript.transpileModule(jsxCode, {
 		compilerOptions: {
-			jsx: typescript.JsxEmit.ReactJSX,
+			jsx: typescript.JsxEmit.React,
+			module: typescript.ModuleKind.NodeNext,
 		},
-	});
-	const vm = new NodeVM({
-		require: {
-			external: true,
-		},
-	});
-	const jsCode = new VMScript(transpileModule.outputText);
+	}).outputText;
+	const tmpFilename = path.join(
+		os.tmpdir(),
+		`tmp-gatsby-plugin-satorare-${node.id}.js`,
+	);
+	fs.writeFileSync(tmpFilename, transpiled);
 
-	const createFunc: (node: Node) => React.ReactNode = vm.run(jsCode).default;
-	return createFunc(node);
+	const module = await import(tmpFilename);
+	global.React = await import("react");
+
+	return module.default.default(node);
 };
 
 const getOgImage = async (
@@ -140,30 +145,35 @@ export const onPostBootstrap: GatsbyNode["onPostBootstrap"] = async (
 		};
 	});
 
+	const tasks = [];
 	for (const targetNode of option.target_nodes) {
 		const nodes = getNodesByType(targetNode);
 		for (const node of nodes) {
-			const image = await getOgImage(node, fonts, option, cache);
-			const fileNode = await createFileNodeFromBuffer({
-				buffer: image,
-				cache,
-				createNodeId,
-				...actions,
-				ext: ".png",
-				parentNodeId: node.id,
-			});
+			tasks.push(async () => {
+				const image = await getOgImage(node, fonts, option, cache);
+				const fileNode = await createFileNodeFromBuffer({
+					buffer: image,
+					cache,
+					createNodeId,
+					...actions,
+					ext: ".png",
+					parentNodeId: node.id,
+				});
 
-			const digest = `${node.id} >>> ${targetNode}OgImage`;
-			await actions.createNode({
-				id: createNodeId(digest),
-				parent: node.id,
-				internal: {
-					type: `${targetNode}OgImage`,
-					contentDigest: digest,
-				},
-				attributes: fileNode,
+				const digest = `${node.id} >>> ${targetNode}OgImage`;
+				await actions.createNode({
+					id: createNodeId(digest),
+					parent: node.id,
+					internal: {
+						type: `${targetNode}OgImage`,
+						contentDigest: digest,
+					},
+					attributes: fileNode,
+				});
 			});
 		}
 	}
+
+	await Promise.all(tasks.map((task) => task()));
 	activity.end();
 };
