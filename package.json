@@ -40,8 +40,7 @@
   },
   "dependencies": {
     "satori": "^0.10.11",
-    "sharp": "^0.33.1",
-    "vm2": "^3.9.19"
+    "sharp": "^0.33.1"
   },
   "peerDependencies": {
     "gatsby": "^5.0.0",
