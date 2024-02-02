@@ -1,6 +1,6 @@
 {
   "name": "gatsby-plugin-satorare",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Gatsby plugin that can dynamically generate OG images using JSX syntax for site and markdowns.",
   "main": "index.js",
   "type": "module",
