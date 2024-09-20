@@ -12,10 +12,6 @@
 		{
 			"matchDepTypes": ["devDependencies"],
 			"groupName": "devDependencies"
-		},
-		{
-			"matchDepTypes": ["dependencies"],
-			"groupName": "dependencies"
 		}
 	]
 }
