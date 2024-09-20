@@ -1,10 +1,10 @@
-import fs from "fs";
-import os from "os";
-import path from "path";
-import { fileURLToPath } from "url";
-import { GatsbyCache, GatsbyNode, Node } from "gatsby";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import type { GatsbyCache, GatsbyNode, Node } from "gatsby";
 import { createFileNodeFromBuffer } from "gatsby-source-filesystem";
-import satori, { Font } from "satori";
+import satori, { type Font } from "satori";
 import sharp from "sharp";
 import typescript from "typescript";
 

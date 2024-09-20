@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc && mv ./dist/* . && rm -rf ./dist",
     "check": "biome check ./src",
-    "check:fix": "biome check --apply-unsafe ./src",
+    "check:fix": "biome check --write --unsafe ./src",
     "check:ci": "biome ci ./src",
     "prepublishOnly": "npm run build"
   },
