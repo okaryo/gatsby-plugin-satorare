@@ -36,7 +36,7 @@
   "homepage": "https://github.com/okaryo/gatsby-plugin-satorare#readme",
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "typescript": "5.6.3"
+    "typescript": "5.7.2"
   },
   "dependencies": {
     "satori": "^0.11.3",
