@@ -39,7 +39,7 @@
     "typescript": "5.7.2"
   },
   "dependencies": {
-    "satori": "^0.11.3",
+    "satori": "^0.12.0",
     "sharp": "^0.33.5"
   },
   "peerDependencies": {
